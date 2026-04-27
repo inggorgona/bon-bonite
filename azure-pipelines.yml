@@ -1,0 +1,18 @@
+trigger:
+- main
+
+pool:
+  name: My_Agent_Pool
+
+steps:
+- task: Gradle@4
+  displayName: 'Ejecutar pruebas con Gradle'
+  inputs:
+    gradleWrapperFile: 'gradlew'
+    tasks: 'clean test aggregate'
+    publishJUnitResults: true
+    # Cambiamos esto para que busque en toda la estructura si es necesario
+    testResultsFiles: '**/build/test-results/**/*.xml' 
+    testRunTitle: 'Pruebas Serenity BDD'
+    javaHomeOption: 'Path'
+    jdkUserInputPath: 'C:\Program Files\Java\jdk-17'
