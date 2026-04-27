@@ -1,0 +1,95 @@
+apply plugin: 'java-library'
+apply plugin: 'net.serenity-bdd.aggregator'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "net.serenity-bdd:serenity-gradle-plugin:${gradlePlugin}"
+    }
+}
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+dependencies {
+
+    implementation "net.serenity-bdd:serenity-core:${serenityCoreVersion}"
+    implementation "net.serenity-bdd:serenity-junit:${serenityCoreVersion}"
+    implementation "net.serenity-bdd:serenity-screenplay:${serenityCoreVersion}"
+    implementation "net.serenity-bdd:serenity-cucumber:${serenityCoreVersion}"
+    implementation "org.assertj:assertj-core:${assertj}"
+    implementation "org.apache.poi:poi:${poi}"
+    implementation "org.apache.poi:poi-ooxml:${poi}"
+    //log en consola
+    implementation "org.slf4j:slf4j-simple:${slf4jVersion}"
+    implementation "net.serenity-bdd:serenity-ensure:${ensure}"
+    //Para no imprimir log
+    //implementation "org.slf4j:slf4j-nop:${slf4}"
+    testImplementation("io.github.bonigarcia:webdrivermanager:${bonigarcia}")
+    //convertir en PDF reporte generado en HTML
+    implementation "org.apache.pdfbox:pdfbox:${pdfbox}"
+    implementation "org.jsoup:jsoup:${jsoup}" // Para procesar HTML
+}
+
+test {
+    useJUnit {
+        include "**/*";
+        gradle.startParameter.continueOnFailure = true
+        testLogging.showStandardStreams = true
+        systemProperties System.getProperties()
+        systemProperty "cucumber.filter.tags", System.getProperty("cucumber.filter.tags")
+    }
+}
+
+serenity {
+    // Especifica el paquete raíz donde se encuentran los runners
+    testRoot = "com.bonite.bon.runners"
+
+    // Directorio base de los requerimientos (features)
+    requirementsBaseDir = ["src/test/resources/features/"]
+
+    // Tipo de reportes que se generarán
+    reports = ["single-page-html"]
+}
+
+// Configuración para continuar las pruebas en caso de fallos
+gradle.startParameter.continueOnFailure = true
+
+// Tareas predeterminadas
+defaultTasks 'clean', 'test', 'aggregate'
+
+// Asegura que la tarea 'aggregate' se ejecute después de 'test'
+test.finalizedBy(aggregate)
+
+task cleanReports(type: Delete) {
+    delete file("target/site/serenity")
+}
+
+task openReport {
+    doLast {
+        def reportFile = file("target/site/serenity/index.html")
+        def os = System.getProperty("os.name").toLowerCase()
+
+        if (os.contains("windows")) {
+            new ProcessBuilder("rundll32", "url.dll,FileProtocolHandler", reportFile.absolutePath)
+                    .start()
+        } else if (os.contains("mac")) {
+            new ProcessBuilder("open", reportFile.absolutePath).start()
+        } else if (os.contains("linux")) {
+            new ProcessBuilder("xdg-open", reportFile.absolutePath).start()
+        }
+    }
+}
+
+// Asegúrate de limpiar antes de generar los nuevos reportes
+test.dependsOn(cleanReports)
+
+// Abre el reporte después de que se generen los reportes (aggregate)
+aggregate.finalizedBy(openReport)
