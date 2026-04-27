@@ -19,7 +19,6 @@ public class AbrirNavegador implements Interaction {
 
     @Override
     public <T extends Actor> void performAs(T actor) {
-        WebDriverManager.chromedriver().setup();
 
         actor.attemptsTo(
                 Open.url(excel.leerDatos("Dominio", 0, 0))
