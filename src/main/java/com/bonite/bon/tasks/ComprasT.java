@@ -26,8 +26,6 @@ public class ComprasT implements Task {
         productos = excel.leerDatos("Compras", 1, 1);
         talla = excel.leerDatos("Compras", 1, 2);
 
-
-
         t.attemptsTo(
                 Click.on(BTN_CATEGORIA.of(categoria)),
                 Click.on(BTN_PRODUCTO.of(productos)),

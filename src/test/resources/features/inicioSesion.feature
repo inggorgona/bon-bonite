@@ -8,7 +8,7 @@ Característica: Inicio de sesion
     Entonces accede al panel principal
 
   @inicioSesionInvalido
-  Escenario: Inicio de sesión fallido con credenciales incorrectas
-    Dado que el usuario está en la pagina de login
+  Escenario: Inicio de sesion fallido con credenciales incorrectas
+    Dado que el usuario esta en la pagina de login
     Cuando ingresa un documento y clave invalido
     Entonces se visualiza mensaje de error

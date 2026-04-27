@@ -1,5 +1,5 @@
 #language: es
-Característica: Registro de usuario
+  Característica: Registro de usuario
 
   Escenario: Registro exitoso
     Dado que el usuario esta en la pagina de registro
